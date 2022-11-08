@@ -59,7 +59,7 @@ def _new_generator_command(ctx, declared_dir, rjars):
     gen_cmd += ' --type-mappings "{mappings}"'.format(
         mappings = _comma_separated_pairs(ctx.attr.type_mappings),
     )
-    
+
     gen_cmd += ' --reserved-words-mappings "{reserved_words_mappings}"'.format(
         reserved_words_mappings = ",".join(ctx.attr.reserved_words_mappings),
     )
@@ -80,6 +80,8 @@ def _new_generator_command(ctx, declared_dir, rjars):
         gen_cmd += " --engine {package}".format(
             package = ctx.attr.engine,
         )
+
+    gen_cmd += ctx.attr.args
 
     # fixme: by default, openapi-generator is rather verbose. this helps with that but can also mask useful error messages
     # when it fails. look into log configuration options. it's a java app so perhaps just a log4j.properties or something
@@ -167,6 +169,7 @@ _openapi_generator = rule(
         "type_mappings": attr.string_dict(),
         "reserved_words_mappings": attr.string_list(),
         "is_windows": attr.bool(mandatory = True),
+        "args": attr.string(),
         "_jdk": attr.label(
             default = Label("@bazel_tools//tools/jdk:current_java_runtime"),
             providers = [java_common.JavaRuntimeInfo],
